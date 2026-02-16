@@ -2,6 +2,7 @@
 
 import React, {useState} from 'react'
 import { ChangeEvent } from 'react'
+import SignupForm from '.'
 
 const SignupPage = () => {
     type userdetail = {
@@ -44,6 +45,7 @@ const SignupPage = () => {
        <input onChange={handleinputchange} type="text" />
        <textarea onChange={handleinputchange}></textarea>
        {/* <button onClick={()=>Parameter(5)}>parameter</button> */}
+       <SignupForm/>
     </div>
   )
 }
