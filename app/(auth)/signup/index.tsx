@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {gql} from "graphql-tag"
 import { useMutation } from '@apollo/client/react'
+import { useRouter } from 'next/navigation'
 
 const CREATEUSER = gql` 
 mutation createuser($name:String!,$email:String!,$age:Int!, $role:String!,$password:String!){
@@ -17,6 +18,7 @@ mutation createuser($name:String!,$email:String!,$age:Int!, $role:String!,$passw
 `
 
 const SignupForm = () => {
+  const router = useRouter()
   const [createuser , {loading, data}] = useMutation(CREATEUSER)
   
   
@@ -25,8 +27,6 @@ const SignupForm = () => {
     })
     console.log(errors);
     const Registeruser = async(value:registerSchematype) =>{
-      console.log(value);
-      
        const userinfo = {
         ...value,
         age: parseInt(value.age),
@@ -35,7 +35,9 @@ const SignupForm = () => {
        console.log(userinfo);
      try {
       const response = await createuser({ variables: userinfo });
+      router.push("/login")
       console.log(response);
+
     } catch (error) {
       console.log(error);
     }
