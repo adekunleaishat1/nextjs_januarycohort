@@ -1,4 +1,4 @@
-import { registerSchema, registerSchematype } from "@/lib/schema";
+import { registerSchema, registerSchematype } from "@/app/lib/schema";
 import { z } from "zod";
 
 const alluser:registerSchematype[]  = []

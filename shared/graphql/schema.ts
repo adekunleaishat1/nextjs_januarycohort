@@ -41,12 +41,13 @@ export let users = [
     createdAt: "2025-05-18T11:20:00Z",
   },
 ];
-
+import { usermodel } from "../database/model/user.model";
 type user = {
   name :string,
   email:string,
   age:number,
-  role:string
+  role:string,
+  password:string
 }
 export const typeDefs = `
   type user {
@@ -70,7 +71,7 @@ export const typeDefs = `
   }
 
   type Mutation {
-    createuser( name:String!, email:String!, age:Int!, role:String!):[user]
+    createuser( name:String!, email:String!, age:Int!, role:String!, password:String!):user
    }
 
 `
@@ -88,16 +89,18 @@ export const resolvers = {
 
   },
   Mutation:{
-     createuser:(_:any, userdetail:user) =>{
-        console.log(userdetail);
-       const newuser = {
-        id:String(users?.length + 1),
-        ...userdetail,
-        createdAt:String(Date.now())
-       } 
-       console.log(newuser);
-       users.push(newuser)
-       return users
+     createuser: async(_:any, userdetail:user) =>{
+       try {
+           console.log(userdetail);
+        const newuser = await usermodel.create(userdetail)
+           if (newuser) {
+            return newuser
+           }
+       } catch (error) {
+         if (error instanceof Error) {
+              throw new Error(error?.message)
+           }
+       }
      }
   }
 };
