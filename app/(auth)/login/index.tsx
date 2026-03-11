@@ -17,13 +17,16 @@ const loginSchema = z.object({
 type LoginSchemaType = z.infer<typeof loginSchema>;
 
 const LOGIN_USER = gql`
-  mutation loginuser($email: String!, $password: String!) {
-    loginuser(email: $email, password: $password) {
-      id
-      name
-      email
-    }
+mutation loginuser($email:String!, $password:String!){
+  loginuser(email: $email, password: $password) {
+     user {
+        name
+        email,
+      },
+      token
+    
   }
+}
 `;
 
 const LoginForm = () => {
@@ -41,13 +44,22 @@ const LoginForm = () => {
 
   const onSubmit = async (values: LoginSchemaType) => {
     try {
-      const response = await loginuser({ variables: values });
+      const {data} = await loginuser({ variables: values });
+      console.log(data);
+      
+      const response = await fetch("http://localhost:3000/api/setcookies", {
+        method: "POST",
+        body: JSON.stringify({ token: data?.loginuser?.token }),
+      });
       console.log(response);
-      const obj = {
+      if (response.status == 200) {
+         const obj = {
         isSignedIn:true
       }
       localStorage.setItem("isSignedIn", JSON.stringify(obj))
       router.push("/");
+      }
+     
     } catch (error) {
       console.log(error);
     }

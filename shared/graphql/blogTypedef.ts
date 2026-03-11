@@ -11,6 +11,7 @@ export const blogtypeDefs = `
     image:String
     createdAt:String
     }
+    
     type Query{
      allblog:[blog]
     }
