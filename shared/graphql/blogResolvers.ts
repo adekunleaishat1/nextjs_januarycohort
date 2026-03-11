@@ -1,6 +1,15 @@
 import blogmodel from "../database/model/blog.model";
 import cloudinary from "../lib/cloudinary";
 
+
+type contexttype ={
+  user: {
+    email:string
+    id: string
+    iat: number
+  }
+}
+
 type blog = {
     title:string
     content:string
@@ -17,8 +26,14 @@ export const blogresolvers = {
    }
   },
   Mutation:{
-     addblog: async(_, param:blog)=>{
+     addblog: async(_, param:blog, context:contexttype)=>{
         try {
+
+          const {user}  = context
+          console.log(user);
+          if (!user) {
+             throw new Error("invalid user")
+          }
           const {title, content,excerp,author, category, image} = param
            if (!title || !content || !excerp || !category || !image || !author) {
              throw new Error("All fields are mandatoy")
@@ -27,10 +42,9 @@ export const blogresolvers = {
           if (uploaded) {
            const newBlog =  await blogmodel.create({
              ...param,
-             image:uploaded.secure_url       
-             })
-             return newBlog
-          }
+             image:uploaded.secure_url })
+            return newBlog
+           }
         } catch (error) {
           if (error instanceof Error) {
              throw new Error(error?.message)

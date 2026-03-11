@@ -8,26 +8,14 @@ import { useMutation } from "@apollo/client/react";
 import Image from "next/image";
 
 const ADD_BLOG = gql`
-  mutation addblog(
-    $title: String!
-    $content: String!
-    $excerp: String!
-    $category: String!
-    $image: String!
-    $author: String!
-  ) {
-    addblog(
-      title: $title
-      content: $content
-      excerp: $excerp
-      category: $category
-      image: $image
-      author: $author
-    ) {
-      id
-      title
-    }
+ mutation addblog($title:String! , $content:String!,$excerp:String!,$author:String!,$category:String!,$image:String!){
+  addblog(title: $title, content: $content,category: $category,excerp: $excerp,image: $image,author:$author){
+    title,
+    content,
+    category,
+    image
   }
+}
 `;
 
 const NewPostPage = () => {
@@ -50,7 +38,7 @@ const NewPostPage = () => {
     }
 
     try {
-      await addblog({
+    const response =   await addblog({
         variables: {
           title,
           content,
@@ -60,7 +48,9 @@ const NewPostPage = () => {
           author,
         },
       });
-      router.push("/dashboard");
+      console.log(response);
+      
+      // router.push("/dashboard");
     } catch (err) {
       console.error(err);
       alert("Failed to publish post. Check console for details.");
@@ -109,7 +99,7 @@ const NewPostPage = () => {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter an engaging title for your post"
-              className="w-full border border-gray-200 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full text-black border border-gray-200 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500"
             />
           </div>
 
@@ -119,7 +109,7 @@ const NewPostPage = () => {
               value={excerp}
               onChange={(e) => setExcerp(e.target.value)}
               placeholder="Write a brief summary that will appear in previews"
-              className="w-full border border-gray-200 rounded-md px-4 py-3 h-24 outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full text-black border border-gray-200 rounded-md px-4 py-3 h-24 outline-none focus:ring-2 focus:ring-purple-500"
             />
           </div>
 
@@ -129,7 +119,7 @@ const NewPostPage = () => {
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="Write your blog post content here..."
-              className="w-full border border-gray-200 rounded-md px-4 py-3 h-64 outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full text-black border border-gray-200 rounded-md px-4 py-3 h-64 outline-none focus:ring-2 focus:ring-purple-500"
             />
           </div>
 
@@ -140,7 +130,7 @@ const NewPostPage = () => {
                 value={author}
                 onChange={(e) => setAuthor(e.target.value)}
                 placeholder="Your name"
-                className="w-full border border-gray-200 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full text-black border border-gray-200 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500"
               />
             </div>
 
@@ -165,7 +155,7 @@ const NewPostPage = () => {
                 value={image}
                 onChange={(e) => setImage(e.target.value)}
                 placeholder="https://example.com/image.jpg"
-                className="w-full border border-gray-200 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full text-black border border-gray-200 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500"
               />
             </div>
 
@@ -174,7 +164,7 @@ const NewPostPage = () => {
               <input
                 value={readTime}
                 onChange={(e) => setReadTime(e.target.value)}
-                className="w-full border border-gray-200 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full text-black border border-gray-200 rounded-md px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500"
               />
             </div>
           </div>
