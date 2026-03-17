@@ -18,6 +18,7 @@ export const blogtypeDefs = `
  
   type Mutation {
       addblog(title:String!, content:String!, excerp:String!, category:String!,image:String!, author:String!):blog
+      deleteblog(id:ID!):blog
    }
 
 `

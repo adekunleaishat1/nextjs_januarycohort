@@ -1,5 +1,7 @@
+
 import blogmodel from "../database/model/blog.model";
 import cloudinary from "../lib/cloudinary";
+import { usermodel } from "../database/model/user.model";
 
 
 type contexttype ={
@@ -50,6 +52,26 @@ export const blogresolvers = {
              throw new Error(error?.message)
           }
         }
+     },
+     deleteblog: async (_, param: {id:string},context:contexttype) =>{
+      try {
+         const {user}  = context
+          console.log(user);
+          // if (!user) {
+          //    throw new Error("invalid user")
+          // }
+         const oneuser =  await usermodel.findById(user?.id)
+         console.log(oneuser);
+         
+          const deleteblog = await blogmodel.findOneAndDelete({_id:param?.id})
+          console.log(deleteblog);
+          
+        return deleteblog
+      } catch (error) {
+         if (error instanceof Error) {
+             throw new Error(error?.message)
+          }
+      }
      }
 
   }

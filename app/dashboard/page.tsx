@@ -3,6 +3,31 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import gql from "graphql-tag";
+import { useQuery, useMutation } from "@apollo/client/react";
+
+const ALLBLOG = gql`
+query getblog{
+  allblog {
+    id,
+    title,
+    content,
+    author,
+    image,
+    category
+  }
+}
+`
+const DELETEBLOG = gql `
+mutation deleteblog($id:ID!){
+  deleteblog(id:$id){
+    title,
+    content,
+    image,
+    
+  }
+}
+`
 
 // Dummy blog data
 const blogs = [
@@ -65,16 +90,25 @@ const getCategoryColor = (category: string) => {
 };
 
 const Dashboard = () => {
+   const [deleteblog, {loading:deleteloading }] = useMutation(DELETEBLOG);
+  const {data, loading, error} = useQuery(ALLBLOG)
+  console.log(data?.allblog);
+  
   const [searchQuery, setSearchQuery] = useState("");
   const userName = "aishat adekunle"; // This would come from auth context
 
-  const filteredBlogs = blogs.filter(
+  const filteredBlogs = data?.allblog && data?.allblog.filter(
     (blog) =>
       blog.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       blog.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
       blog.author.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
+  const Deleteblog = async(id:string) =>{
+    console.log(id);
+   const response = await deleteblog({variables:{id}})
+   console.log(response);
+   
+  }
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Dashboard Navbar */}
@@ -276,7 +310,7 @@ const Dashboard = () => {
           </div>
 
           {/* Table Body */}
-          {filteredBlogs.map((blog) => (
+          {loading ? "LOADING..." : filteredBlogs.map((blog) => (
             <div
               key={blog.id}
               className="grid grid-cols-12 gap-4 px-6 py-4 border-b border-gray-100 items-center hover:bg-gray-50 transition-colors"
@@ -338,26 +372,28 @@ const Dashboard = () => {
                     />
                   </svg>
                 </button>
-                <button className="p-2 text-gray-400 hover:text-red-600 transition-colors">
+                <button onClick={()=>Deleteblog(blog.id)} className="p-2 text-gray-400 hover:text-red-600 transition-colors">
+                 {deleteloading ? "Loading..."  :
                   <svg
                     className="w-4 h-4"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
+                   
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
                       d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                     />
-                  </svg>
+                  </svg> }
                 </button>
               </div>
             </div>
           ))}
 
-          {filteredBlogs.length === 0 && (
+          {loading? "Loading..." : filteredBlogs.length === 0 && (
             <div className="px-6 py-12 text-center">
               <p className="text-gray-500">No posts found matching your search.</p>
             </div>
