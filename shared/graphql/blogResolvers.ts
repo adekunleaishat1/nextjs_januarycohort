@@ -63,7 +63,7 @@ export const blogresolvers = {
          const oneuser =  await usermodel.findById(user?.id)
          console.log(oneuser);
          
-          const deleteblog = await blogmodel.findOneAndDelete({_id:param?.id})
+          const deleteblog = await blogmodel.findOneAndDelete({_id:param?.id},{author:oneuser?.name })
           console.log(deleteblog);
           
         return deleteblog
