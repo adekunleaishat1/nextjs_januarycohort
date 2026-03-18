@@ -7,8 +7,8 @@ import gql from "graphql-tag";
 import { useQuery, useMutation } from "@apollo/client/react";
 
 const ALLBLOG = gql`
-query getblog{
-  allblog {
+query getblog($page:Int,$limit:Int){
+  allblog(page:$page,limit:$limit) {
     id,
     title,
     content,
@@ -90,13 +90,17 @@ const getCategoryColor = (category: string) => {
 };
 
 const Dashboard = () => {
-   const [deleteblog, {loading:deleteloading }] = useMutation(DELETEBLOG);
-  const {data, loading, error} = useQuery(ALLBLOG)
+  const [page, setpage] = useState(1)
+   const [deleteblog] = useMutation(DELETEBLOG);
+  const {data, loading, error} = useQuery(ALLBLOG,{variables:{limit:2, page:page}})
   console.log(data?.allblog);
   
   const [searchQuery, setSearchQuery] = useState("");
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const userName = "aishat adekunle"; // This would come from auth context
-
+ const nextpage = () =>{
+  setpage(page + 1)
+ }
   const filteredBlogs = data?.allblog && data?.allblog.filter(
     (blog) =>
       blog.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -105,9 +109,15 @@ const Dashboard = () => {
   );
   const Deleteblog = async(id:string) =>{
     console.log(id);
-   const response = await deleteblog({variables:{id}})
-   console.log(response);
-   
+    setDeletingId(id);
+    try {
+      const response = await deleteblog({variables:{id}, refetchQueries:[{query:ALLBLOG}]})
+      console.log(response);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setDeletingId(null);
+    }
   }
   return (
     <div className="min-h-screen bg-gray-50">
@@ -372,8 +382,13 @@ const Dashboard = () => {
                     />
                   </svg>
                 </button>
-                <button onClick={()=>Deleteblog(blog.id)} className="p-2 text-gray-400 hover:text-red-600 transition-colors">
-                 {deleteloading ? "Loading..."  :
+                <button onClick={()=>Deleteblog(blog.id)} className="p-2 text-gray-400 hover:text-red-600 transition-colors" disabled={deletingId === blog.id}>
+                 {deletingId === blog.id ? (
+                  <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                  </svg>
+                 ) :
                   <svg
                     className="w-4 h-4"
                     fill="none"
@@ -392,13 +407,16 @@ const Dashboard = () => {
               </div>
             </div>
           ))}
-
+          <button onClick={nextpage}>
+            Next
+          </button>
           {loading? "Loading..." : filteredBlogs.length === 0 && (
             <div className="px-6 py-12 text-center">
               <p className="text-gray-500">No posts found matching your search.</p>
             </div>
           )}
         </div>
+        
       </main>
     </div>
   );

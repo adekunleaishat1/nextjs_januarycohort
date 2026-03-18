@@ -1,10 +1,10 @@
 "use client"
 import Navbar from "@/shared/navbar";
+import { useAuth } from "@/app/lib/hooks/useAuth";
 
 
 export default function Home() {
-  const isSignedIn = JSON.parse(localStorage.getItem("isSignedIn")!)
-  console.log(isSignedIn);
+  const { isSignedIn } = useAuth();
   
   return (
     <div className="min-h-screen bg-white">

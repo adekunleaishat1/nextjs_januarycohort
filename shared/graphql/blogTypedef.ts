@@ -13,7 +13,7 @@ export const blogtypeDefs = `
     }
     
     type Query{
-     allblog:[blog]
+     allblog(page:Int,limit:Int):[blog]
     }
  
   type Mutation {

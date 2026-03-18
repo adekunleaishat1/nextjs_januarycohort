@@ -1,5 +1,6 @@
 import { usermodel } from "../database/model/user.model";
 import jsonwebtoken from "jsonwebtoken"
+import { GraphQLError } from "graphql";
 
 type user = {
   name :string,
@@ -38,17 +39,21 @@ export const userresolvers = {
      loginuser: async(_:any, {email , password}:{email:string, password:string}) =>{
          try {
          const existuser =  await usermodel.findOne({email})
+         if (!existuser) {
+          throw new GraphQLError("Invalid credentials")
+         }
         const token =  await jsonwebtoken.sign(
             {email:existuser.email,
             id:existuser._id
-          }, "secretkey")
+          }, "secretkey", { expiresIn: '24h' })
+
          if(existuser && existuser.password == password){
            return {user:existuser, token}
           }
-          throw new Error("invalid credentials")
+          throw new GraphQLError("invalid credentials")
          } catch (error) {
           if (error instanceof Error) {
-             throw new Error(error?.message)
+             throw new GraphQLError(error?.message)
           }
           
          }

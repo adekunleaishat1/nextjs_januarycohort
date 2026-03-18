@@ -22,8 +22,13 @@ type blog = {
 }
 export const blogresolvers = {
   Query: {
-   allblog:async()=>{
-      const allblog = await blogmodel.find()
+   allblog:async(_,{page, limit}:{page:number, limit:number})=>{
+    console.log(page);
+    console.log(limit);
+    const skip = (page - 1) * limit
+     const total =  await blogmodel.countDocuments()
+      const totalpages = Math.ceil(total / limit)      
+     const allblog = await blogmodel.find().skip(skip).limit(limit)
       return allblog
    }
   },
@@ -57,13 +62,13 @@ export const blogresolvers = {
       try {
          const {user}  = context
           console.log(user);
-          // if (!user) {
-          //    throw new Error("invalid user")
-          // }
+          if (!user) {
+             throw new Error("invalid user")
+          }
          const oneuser =  await usermodel.findById(user?.id)
          console.log(oneuser);
          
-          const deleteblog = await blogmodel.findOneAndDelete({_id:param?.id},{author:oneuser?.name })
+          const deleteblog = await blogmodel.findOneAndDelete({_id:param?.id, author:oneuser?.name })
           console.log(deleteblog);
           
         return deleteblog

@@ -44,6 +44,8 @@ const LoginForm = () => {
 
   const onSubmit = async (values: LoginSchemaType) => {
     try {
+      console.log(values);
+      
       const {data} = await loginuser({ variables: values });
       console.log(data);
       
@@ -54,7 +56,7 @@ const LoginForm = () => {
       console.log(response);
       if (response.status == 200) {
          const obj = {
-        isSignedIn:true
+        isSignedIn: true,
       }
       localStorage.setItem("isSignedIn", JSON.stringify(obj))
       router.push("/");
@@ -62,6 +64,10 @@ const LoginForm = () => {
      
     } catch (error) {
       console.log(error);
+      
+      if (error instanceof Error) {
+         alert(error.message);
+      }
     }
   };
 
