@@ -5,15 +5,14 @@ import connect from "@/shared/database/db.connect"
 import jwt from "jsonwebtoken"
 import { NextRequest } from "next/server"
 
+interface Context {
+  user?: string | jwt.JwtPayload; 
+}
+
 const server = new ApolloServer({
    typeDefs,
    resolvers,
-   
 })
-interface Context {
-  user?: string | jwt.JwtPayload; 
-
-}
 
 const handler = startServerAndCreateNextHandler<NextRequest>(server,{
     context:  async(req):Promise<Context> =>{
