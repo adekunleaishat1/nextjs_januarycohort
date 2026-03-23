@@ -16,6 +16,20 @@ const loginSchema = z.object({
 
 type LoginSchemaType = z.infer<typeof loginSchema>;
 
+interface LoginUserResponse {
+  loginuser:{
+   token: string
+   user: {
+    email : string
+    name :string
+   }
+  }
+}
+
+interface loginuser extends LoginUserResponse{
+  password:string
+}
+
 const LOGIN_USER = gql`
 mutation loginuser($email:String!, $password:String!){
   loginuser(email: $email, password: $password) {
@@ -32,7 +46,7 @@ mutation loginuser($email:String!, $password:String!){
 const LoginForm = () => {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  const [loginuser, { loading }] = useMutation(LOGIN_USER);
+  const [loginuser, { loading }] = useMutation<LoginUserResponse>(LOGIN_USER);
 
   const {
     register,
@@ -48,7 +62,9 @@ const LoginForm = () => {
       
       const {data} = await loginuser({ variables: values });
       console.log(data);
-      
+      if (data) {
+        
+      }
       const response = await fetch("http://localhost:3000/api/setcookies", {
         method: "POST",
         body: JSON.stringify({ token: data?.loginuser?.token }),
@@ -57,7 +73,7 @@ const LoginForm = () => {
       if (response.status == 200) {
          const obj = {
         isSignedIn: true,
-      }
+        }
       localStorage.setItem("isSignedIn", JSON.stringify(obj))
       router.push("/");
       }
@@ -221,7 +237,7 @@ const LoginForm = () => {
         {/* Divider */}
         <div className="flex items-center my-6">
           <div className="flex-1 border-t border-gray-200"></div>
-          <span className="px-4 text-gray-500 text-sm">Don't have an account?</span>
+          <span className="px-4 text-gray-500 text-sm">Do not have an account?</span>
           <div className="flex-1 border-t border-gray-200"></div>
         </div>
 
