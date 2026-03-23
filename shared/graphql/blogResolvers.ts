@@ -22,7 +22,7 @@ type blog = {
 }
 export const blogresolvers = {
   Query: {
-   allblog:async(_,{page, limit}:{page:number, limit:number})=>{
+   allblog:async(_: unknown,{page, limit}:{page:number, limit:number})=>{
     console.log(page);
     console.log(limit);
     const skip = (page - 1) * limit
@@ -33,7 +33,7 @@ export const blogresolvers = {
    }
   },
   Mutation:{
-     addblog: async(_, param:blog, context:contexttype)=>{
+     addblog: async(_: unknown, param:blog, context:contexttype)=>{
         try {
 
           const {user}  = context
@@ -58,7 +58,7 @@ export const blogresolvers = {
           }
         }
      },
-     deleteblog: async (_, param: {id:string},context:contexttype) =>{
+     deleteblog: async (_: unknown, param: {id:string},context:contexttype) =>{
       try {
          const {user}  = context
           console.log(user);
