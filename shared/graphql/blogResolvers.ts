@@ -5,7 +5,7 @@ import { usermodel } from "../database/model/user.model";
 
 
 type contexttype ={
-  user: {
+  user?: {
     email:string
     id: string
     iat: number
