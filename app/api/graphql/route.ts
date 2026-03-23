@@ -16,18 +16,19 @@ interface Context {
 }
 
 const handler = startServerAndCreateNextHandler<NextRequest>(server,{
-    context: async(req):Promise<Context> =>{
+    context:  async(req):Promise<Context> =>{
        try {
         const cookie = req.headers.get('cookie')?.split(';')
             .find(c => c.trim().startsWith('auth_token='));
         const token = cookie?.split('=')[1];
         if (!token) {
            return {} 
-            }
+         }
          const verifieduser = await  jwt.verify(token, "secretkey" )
          if (verifieduser) {
             return {user:verifieduser}
          }
+         return {} 
       } catch (error) {
           return {}
       }

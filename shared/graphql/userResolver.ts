@@ -15,7 +15,7 @@ export const userresolvers = {
       const alluser = await usermodel.find()
        return alluser
     },
-    oneuser: async(_:any,{id}:{id:string})=>{
+    oneuser: async(_:unknown,{id}:{id:string})=>{
       console.log(id);
      const oneuser = await usermodel.findById(id)
      return oneuser
@@ -23,7 +23,7 @@ export const userresolvers = {
 
   },
   Mutation:{
-     createuser: async(_:any, userdetail:user) =>{
+     createuser: async(_:unknown, userdetail:user) =>{
        try {
            console.log(userdetail);
         const newuser = await usermodel.create(userdetail)
@@ -36,7 +36,7 @@ export const userresolvers = {
            }
        }
      },
-     loginuser: async(_:any, {email , password}:{email:string, password:string}) =>{
+     loginuser: async(_:unknown, {email , password}:{email:string, password:string}) =>{
          try {
          const existuser =  await usermodel.findOne({email})
          if (!existuser) {
