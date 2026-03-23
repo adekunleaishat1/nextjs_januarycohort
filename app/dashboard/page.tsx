@@ -6,6 +6,18 @@ import Image from "next/image";
 import gql from "graphql-tag";
 import { useQuery, useMutation } from "@apollo/client/react";
 
+
+ type Allblogresponse = {
+  allblog: [{
+ id: string,
+ title:string
+ author :string
+ content:string
+ category:string
+ date?: string
+ image :string
+  }]
+ }
 const ALLBLOG = gql`
 query getblog($page:Int,$limit:Int){
   allblog(page:$page,limit:$limit) {
@@ -29,54 +41,56 @@ mutation deleteblog($id:ID!){
 }
 `
 
+
 // Dummy blog data
-const blogs = [
-  {
-    id: "1",
-    title: "Getting Started with Modern Web Develop...",
-    author: "Sarah Johnson",
-    category: "Technology",
-    date: "Feb 1, 2026",
-    readTime: "5 min read",
-    image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=100&h=100&fit=crop",
-  },
-  {
-    id: "2",
-    title: "The Art of Minimalist Design",
-    author: "Michael Chen",
-    category: "Design",
-    date: "Jan 28, 2026",
-    readTime: "4 min read",
-    image: "https://images.unsplash.com/photo-1545239351-ef35f43d514b?w=100&h=100&fit=crop",
-  },
-  {
-    id: "3",
-    title: "Finding Inspiration in Nature",
-    author: "Emma Williams",
-    category: "Lifestyle",
-    date: "Jan 25, 2026",
-    readTime: "6 min read",
-    image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=100&h=100&fit=crop",
-  },
-  {
-    id: "4",
-    title: "Delicious Recipes for Every Season",
-    author: "Julia Roberts",
-    category: "Food",
-    date: "Jan 20, 2026",
-    readTime: "7 min read",
-    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=100&h=100&fit=crop",
-  },
-  {
-    id: "5",
-    title: "Travel Adventures Around the World",
-    author: "Alex Turner",
-    category: "Travel",
-    date: "Jan 18, 2026",
-    readTime: "8 min read",
-    image: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=100&h=100&fit=crop",
-  },
-];
+
+// const blogs = [
+//   {
+//     id: "1",
+//     title: "Getting Started with Modern Web Develop...",
+//     author: "Sarah Johnson",
+//     category: "Technology",
+//     date: "Feb 1, 2026",
+//     readTime: "5 min read",
+//     image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=100&h=100&fit=crop",
+//   },
+//   {
+//     id: "2",
+//     title: "The Art of Minimalist Design",
+//     author: "Michael Chen",
+//     category: "Design",
+//     date: "Jan 28, 2026",
+//     readTime: "4 min read",
+//     image: "https://images.unsplash.com/photo-1545239351-ef35f43d514b?w=100&h=100&fit=crop",
+//   },
+//   {
+//     id: "3",
+//     title: "Finding Inspiration in Nature",
+//     author: "Emma Williams",
+//     category: "Lifestyle",
+//     date: "Jan 25, 2026",
+//     readTime: "6 min read",
+//     image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=100&h=100&fit=crop",
+//   },
+//   {
+//     id: "4",
+//     title: "Delicious Recipes for Every Season",
+//     author: "Julia Roberts",
+//     category: "Food",
+//     date: "Jan 20, 2026",
+//     readTime: "7 min read",
+//     image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=100&h=100&fit=crop",
+//   },
+//   {
+//     id: "5",
+//     title: "Travel Adventures Around the World",
+//     author: "Alex Turner",
+//     category: "Travel",
+//     date: "Jan 18, 2026",
+//     readTime: "8 min read",
+//     image: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=100&h=100&fit=crop",
+//   },
+// ];
 
 const getCategoryColor = (category: string) => {
   const colors: Record<string, string> = {
@@ -92,7 +106,7 @@ const getCategoryColor = (category: string) => {
 const Dashboard = () => {
   const [page, setpage] = useState(1)
    const [deleteblog] = useMutation(DELETEBLOG);
-  const {data, loading, error} = useQuery(ALLBLOG,{variables:{limit:2, page:page}})
+  const {data, loading, error} = useQuery<Allblogresponse>(ALLBLOG,{variables:{limit:2, page:page}})
   console.log(data?.allblog);
   
   const [searchQuery, setSearchQuery] = useState("");
@@ -320,7 +334,7 @@ const Dashboard = () => {
           </div>
 
           {/* Table Body */}
-          {loading ? "LOADING..." : filteredBlogs.map((blog) => (
+          {loading ? "LOADING..." :  filteredBlogs?.map((blog) => (
             <div
               key={blog.id}
               className="grid grid-cols-12 gap-4 px-6 py-4 border-b border-gray-100 items-center hover:bg-gray-50 transition-colors"
@@ -361,9 +375,9 @@ const Dashboard = () => {
               </div>
 
               {/* Read Time */}
-              <div className="col-span-1">
-                <span className="text-sm text-gray-500">{blog.readTime}</span>
-              </div>
+              {/* <div className="col-span-1">
+                <span className="text-sm text-gray-500">{blog?.readTime}</span>
+              </div> */}
 
               {/* Actions */}
               <div className="col-span-1 flex items-center gap-2">
@@ -410,7 +424,7 @@ const Dashboard = () => {
           <button onClick={nextpage}>
             Next
           </button>
-          {loading? "Loading..." : filteredBlogs.length === 0 && (
+          {loading? "Loading..." : filteredBlogs?.length === 0 && (
             <div className="px-6 py-12 text-center">
               <p className="text-gray-500">No posts found matching your search.</p>
             </div>
